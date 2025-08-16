@@ -28,7 +28,6 @@ export const useSimilaritySearch = () => {
     useEffect(() => {
         const initialize = async () => {
         try {
-        // パイプライン（モデル）のロード
         const newPipe = await pipeline('feature-extraction', MODEL_NAME);
         setPipe(newPipe);
 
@@ -53,7 +52,7 @@ export const useSimilaritySearch = () => {
         }
     };
     initialize();
-  }, []); // 依存配列が空なので、コンポーネントのマウント時に一度だけ実行
+    }, []);
 
   // 類似度計算のヘルパー関数
     const calculateCosineSimilarity = (vecA: number[], vecB: number[]) => {
@@ -92,7 +91,7 @@ export const useSimilaritySearch = () => {
 
     // 類似度でソートし、上位5件を返す
     return results.sort((a, b) => b.similarity - a.similarity).slice(0, 5);
-  }, [pipe, novels]); // `pipe`と`novels`が変更された場合に`search`関数を再生成
+    }, [pipe, novels]);
 
     return { loading, error, search };
 };
