@@ -1,6 +1,7 @@
 //APIフォルダ内のファイルにて行っている処理を実行
 import { useState, useEffect, useCallback } from 'react';
 import { pipeline } from '@xenova/transformers';
+import { Novel, SimilarityResult } from './novel.d'; // 小説データの型定義をインポート
 
 // 小説データの型定義
 interface Novel {
