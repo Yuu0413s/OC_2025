@@ -1,7 +1,18 @@
 //メインコンポーネント
-import { Box, Spinner, Alert, AlertIcon, VStack } from '@yamada-ui/react';
+import { Container, Heading, UIProvider, VStack } from "@yamada-ui/react"
+import { SearchForm } from "./components/SearchForm"
 
-import { SearchForm } from "./components/SearchForm";
-import { NovelList } from "./components/NovelList";
+function App() {
+    return (
+    <UIProvider>
+        <Container maxW="3xl" py="lg">
+        <VStack spacing="lg">
+            <Heading>なろう小説検索</Heading>
+            <SearchForm />
+        </VStack>
+        </Container>
+    </UIProvider>
+    )
+}
 
-import { useSimilaritySearch } from "./hooks/useSimilaritySearch";
+export default App

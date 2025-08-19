@@ -1,100 +1,83 @@
-import React, { useState } from 'react';
-import { Box, Button, Input, Textarea, VStack, Text, Loading, Alert, AlertIcon } from '@yamada-ui/react';
-import { useSimilaritySearch } from '../useSimilaritySearch';
-import NovelList from './NovelList';
+//検索機能のコンポーネント
+import { useState } from 'react';
+import type { FormEvent, ChangeEvent } from 'react';
+import { useSimilaritySearch } from '../hooks/useSimilaritySearch';
+import { Input, Button, VStack, Text, FormControl, Loading, Label, Center } from '@yamada-ui/react';
+import { NovelList } from './NovelList';
 
-interface Novel {
-    title: string;
-    writer: string;
-    story: string;
-}
-
-interface SimilarityResult extends Novel {
-    similarity: number;
-}
-
-const SearchForm = () => {
-    const { loading, error, search } = useSimilaritySearch();
-
+export const SearchForm = () => {
     const [title, setTitle] = useState('');
+    const [writer, setWriter] = useState('');
     const [story, setStory] = useState('');
-    const [searchResults, setSearchResults] = useState<SimilarityResult[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
 
-    const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
+    const [isSearchPerformed, setIsSearchPerformed] = useState(false);
 
-    if (!title || !story || isSearching) return;
+    const { novels, isLoading, error, searchNovels } = useSimilaritySearch();
 
-    setIsSearching(true);
-    setSearchResults([]);
-
-    try {
-        const results = await search(title, story);
-        setSearchResults(results);
-    } catch (err) {
-        console.error('検索中にエラーが発生しました:', err);
-    } finally {
-        setIsSearching(false);
-    }
+    const handleSearch = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        setIsSearchPerformed(true);
+        searchNovels({ title, writer, story });
     };
 
-  // 全体ロード時のスピナー表示
-    if (loading) {
-    return (
-        <Box textAlign="center" py="10">
-        <Loading size="lg" />
-        <Text mt="2">モデルと小説データをロード中...</Text>
-        </Box>
-    );
-    }
-
-  // エラー表示
-    if (error) {
-    return (
-        <Alert status="error">
-        <AlertIcon />
-        データのロードに失敗しました: {error}
-        </Alert>
-    );
-    }
+    const handleFetchRecommendedList = () => {
+        setTitle('');
+        setWriter('');
+        setStory('');
+        setIsSearchPerformed(true);
+        searchNovels({ title, writer, story });
+    };
 
     return (
-        <Box p="6" borderWidth="1px" borderRadius="lg" shadow="md" w="100%" maxW="800px" mx="auto">
-        <VStack as="form" spacing="4" onSubmit={handleSearch}>
-        <Text fontSize="2xl" fontWeight="bold" textAlign="center">
-            類似作品を検索
-        </Text>
+    <VStack spacing={6} align="stretch">
+        <form onSubmit={handleSearch}>
+            <VStack spacing={4} p={4} borderWidth={1} borderRadius="md">
+            <Text fontSize="lg" fontWeight="bold">詳細検索</Text>
+            <FormControl>
+            <Label>タイトル</Label>
+            <Input
+                value={title}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
+                placeholder="タイトルで検索"
+                disabled={isLoading}
+            />
+            </FormControl>
 
-        <Input
-            placeholder="検索したい作品のタイトル"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-        />
-        <Textarea
-            placeholder="検索したい作品のあらすじ"
-            value={story}
-            onChange={(e) => setStory(e.target.value)}
-            rows={6}
-            required
-        />
+            <FormControl>
+            <Label>作者</Label>
+            <Input
+                value={writer}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setWriter(e.target.value)}
+                placeholder="作者名で検索"
+                disabled={isLoading}
+            />
+            </FormControl>
 
-        <Button
-            type="submit"
-            colorScheme="blue"
-          isLoading={isSearching} // ここでローディング状態をコントロール
-            loadingText="検索中..."
-            w="full"
-        >
-            検索を実行
-        </Button>
+            <FormControl>
+            <Label>あらすじ</Label>
+            <Input
+                value={story}
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setStory(e.target.value)}
+                placeholder="あらすじで検索"
+                disabled={isLoading}
+            />
+            </FormControl>
+            <Button type="submit" w="full" colorScheme="primary" disabled={isLoading}>
+                この条件で検索
+            </Button>
         </VStack>
+        </form>
 
-    {/* 検索結果の表示 */}
-        {!isSearching && <NovelList results={searchResults} />}
-    </Box>
+        <Button onClick={handleFetchRecommendedList} w="full" colorScheme="secondary" disabled={isLoading}>
+            おすすめリストを表示
+        </Button>
+
+        {isLoading && <Center><Loading /></Center>}
+        {error && <Text color="red.500">{error.message}</Text>}
+        {!isLoading && isSearchPerformed && (
+        <Text>{novels.length}件の小説が見つかりました。</Text>
+        )}
+        {!isLoading && novels.length > 0 && <NovelList novels={novels} />}
+    </VStack>
     );
 };
-
-export default SearchForm;
