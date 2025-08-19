@@ -3,6 +3,7 @@
 // APIから取得する小説の基本情報インターフェース
 export interface Novel {
     title: string;
+    ncode: string;
     writer: string;
     story: string;
 }
