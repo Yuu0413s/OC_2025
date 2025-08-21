@@ -19,8 +19,8 @@ df["full_text"] = "passage: " + df["title"] + "。" + df["story"]
 embeddings = model.encode(df["full_text"].tolist(), normalize_embeddings=True)
 
 # ✅ ユーザー入力（検索クエリ）
-user_title = "ありふれた職業で世界最強"
-user_story = "クラスごと異世界に召喚され、他のクラスメイトがチートなスペックと“天職”を有する中、一人平凡を地で行く主人公南雲ハジメ。彼の“天職”は“錬成師”、言い換えればただの鍛治職だった。最弱の彼は、クラスメイトにより奈落の底に落とされる。必死に生き足掻き、気がつけば世界最強・・・"
+user_title = ""
+user_story = ""
 query_text = f"query: {user_title}。{user_story}"
 query_vec = model.encode([query_text], normalize_embeddings=True)
 

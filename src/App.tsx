@@ -5,7 +5,7 @@ import { SearchForm } from './components/SearchForm';
 import { NovelList} from './components/NovelList';
 import type { Novel, NarouApiResponse } from './types/novel';
 
-const API_URL = 'https://api.syosetu.com/novelapi/api/?out=json&int=200&of=t-w-s';
+const API_URL = 'https://api.syosetu.com/novelapi/api/?out=json&of=t-w-s-n&lim=200';
 
 function App() {
     const [allNovels, setAllNovels] = useState<Novel[]>([]);
@@ -17,7 +17,7 @@ function App() {
         const fetchAllData = async () => {
             try {
                 const response = await fetch(API_URL);
-                if (!response.ok) throw new Error('HTTPエラー: $(response.status)')
+                if (!response.ok) throw new Error(`(HTTPエラー: ${response.status})`);
 
                     const  data: NarouApiResponse = await response.json();
                     const [, ...novelData] = data;
@@ -41,8 +41,8 @@ function App() {
         const lowerCaseQuery = query.toLowerCase();
 
         const filtered = allNovels.filter(novel =>
-            novel.title.toLowerCase().includes(lowerCaseQuery) ||
-            novel.story.toLowerCase().includes(lowerCaseQuery)
+            (novel.title?.toLowerCase() || '').includes(lowerCaseQuery) ||
+            (novel.story?.toLowerCase() || '').includes(lowerCaseQuery)
         );
         setDisplayedNovels(filtered);
     };
