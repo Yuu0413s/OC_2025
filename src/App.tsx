@@ -1,11 +1,16 @@
 //メインコンポーネント
 import { useState, useEffect } from 'react';
-import { UIProvider, Container, VStack, Heading, Loading, Center, Text } from '@yamada-ui/react';
+import { UIProvider, Container, VStack, Heading, Loading, Center, Text, HStack } from '@yamada-ui/react';
 import { SearchForm } from './components/SearchForm';
 import { NovelList} from './components/NovelList';
 import type { Novel, NarouApiResponse } from './types/novel';
 
 const API_URL = 'https://api.syosetu.com/novelapi/api/?out=json&of=t-w-s-n&lim=200';
+
+interface SearchCriteria {
+    title: string;
+    story: string;
+}
 
 function App() {
     const [allNovels, setAllNovels] = useState<Novel[]>([]);
@@ -33,30 +38,46 @@ function App() {
         fetchAllData();
     }, []);
 
-    const handleSearch = (query: string) => {
-        if (!query.trim()) {
+    const handleSearch = (criteria: SearchCriteria) => {
+        const { query, author } = criteria;
+        const lowerCaseQuery = query.toLowerCase().trim();
+        const lowerCaseAuthor = author.toLowerCase().trim();
+
+        if (!lowerCaseQuery && !lowerCaseAuthor) {
             setDisplayedNovels(allNovels);
             return;
         }
-        const lowerCaseQuery = query.toLowerCase();
 
-        const filtered = allNovels.filter(novel =>
-            (novel.title?.toLowerCase() || '').includes(lowerCaseQuery) ||
-            (novel.story?.toLowerCase() || '').includes(lowerCaseQuery)
-        );
-        setDisplayedNovels(filtered);
+        const filteredNovels = allNovels.filter(novel => {
+            const matchesQuery = !lowerCaseQuery ||
+                (novel.title?.toLowerCase() || '').includes(lowerCaseQuery) ||
+                (novel.story?.toLowerCase() || '').includes(lowerCaseQuery);
+
+            const matchesAuthor = !lowerCaseAuthor ||
+                (novel.writer?.toLowerCase() || '').includes(lowerCaseAuthor);
+
+            return matchesQuery && matchesAuthor;
+        });
+
+        setDisplayedNovels(filteredNovels);
     };
 
     return (
         <UIProvider>
-            <Container maxW="3xl" py="lg">
+            <Container maxW="full" px="lg" py="lg">
                 <VStack spacing="lg">
                     <Heading>小説検索</Heading>
-                    <SearchForm onSearch={handleSearch} />
+                    <HStack spacing="lg" align="start" w="full">
+                        <VStack w="30%" minW="300px" position="sticky" top="lg">
+                            <SearchForm onSearch={handleSearch} />
+                        </VStack>
 
-                    {isLoading && <Center><Loading /></Center>}
-                    {error && <Text color="red.500">{error.message}</Text>}
-                    {!isLoading && <NovelList novels={displayedNovels} />}
+                        <VStack w="70%">
+                            {isLoading && <Center><Loading /></Center>}
+                            {error && <Text color="red.500">{error.message}</Text>}
+                            {!isLoading && <NovelList novels={displayedNovels} />}
+                        </VStack>
+                    </HStack>
                 </VStack>
             </Container>
         </UIProvider>
