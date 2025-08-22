@@ -8,66 +8,72 @@ interface Props {
 }
 
 export const SearchForm = ({ onFilterSearch, onSimilaritySearch }: Props) => {
-  // 絞り込み検索用のstate
     const [filterQuery, setFilterQuery] = useState('');
     const [author, setAuthor] = useState('');
-  // 類似度検索用のstate
     const [similarityQuery, setSimilarityQuery] = useState('');
 
     const handleFilterSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onFilterSearch({ query: filterQuery, author });
+        e.preventDefault();
+        onFilterSearch({ query: filterQuery, author });
     };
 
     const handleSimilaritySubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSimilaritySearch(similarityQuery);
+        onSimilaritySearch(similarityQuery);
     };
 
     return (
-    <Tabs w="full">
-        <TabList>
-        <Tab>絞り込み検索</Tab>
-        <Tab>類似度検索</Tab>
-        </TabList>
-        <TabPanels>
-        <TabPanel>
-            <VStack as="form" onSubmit={handleFilterSubmit} w="full" spacing={4} pt={4}>
-            <FormControl>
-                <Text as="label" mb="sm" display="block" fontSize="md" fontWeight="medium">キーワード</Text>
-                <Input
-                placeholder="タイトル・あらすじ"
-                value={filterQuery}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setFilterQuery(e.target.value)}
-                />
-            </FormControl>
-            <FormControl>
-                <Text as="label" mb="sm" display="block" fontSize="md" fontWeight="medium">作者</Text>
-                <Input
-                placeholder="作者名"
-                value={author}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setAuthor(e.target.value)}
-                />
-            </FormControl>
-            <Button type="submit" colorScheme="primary" w="full">絞り込み検索</Button>
-            </VStack>
-        </TabPanel>
-        <TabPanel>
-            <VStack as="form" onSubmit={handleSimilaritySubmit} w="full" spacing={4} pt={4}>
-            <FormControl>
-                <Text as="label" mb="sm" display="block" fontSize="md" fontWeight="medium">
-                検索したい小説のタイトルやあらすじ
-                </Text>
-                <Textarea
-                placeholder="例: 気がついたら見知らぬ森の中にいた..."
-                value={similarityQuery}
-                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setSimilarityQuery(e.target.value)}
-                minH="120px"
-                />
-            </FormControl>
-            <Button type="submit" colorScheme="secondary" w="full">類似作品を検索</Button>
-            </VStack>
-        </TabPanel>
+        <Tabs w="full">
+            <TabList>
+                <Tab>
+                    絞り込み検索
+                </Tab>
+                <Tab>
+                    作品推薦
+                </Tab>
+            </TabList>
+            <TabPanels>
+            <TabPanel>
+                <VStack as="form" onSubmit={handleFilterSubmit} w="full" spacing={4} pt={4}>
+                    <FormControl>
+                        <Text as="label" mb="sm" display="block" fontSize="md" fontWeight="medium">キーワード</Text>
+                            <Input
+                                placeholder="タイトル・キーワード"
+                                value={filterQuery}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setFilterQuery(e.target.value)}
+                            />
+                    </FormControl>
+
+                    <FormControl>
+                        <Text as="label" mb="sm" display="block" fontSize="md" fontWeight="medium">作者</Text>
+                            <Input
+                                placeholder="作者名"
+                                value={author}
+                                onChange={(e: ChangeEvent<HTMLInputElement>) => setAuthor(e.target.value)}
+                            />
+                    </FormControl>
+
+                    <Button type="submit" colorScheme="primary" w="full">絞り込み検索</Button>
+                </VStack>
+            </TabPanel>
+
+            <TabPanel>
+                <VStack as="form" onSubmit={handleSimilaritySubmit} w="full" spacing={4} pt={4}>
+                    <FormControl>
+                        <Text as="label" mb="sm" display="block" fontSize="md" fontWeight="medium">
+                            あなたが所持している小説のタイトル・キーワード
+                        </Text>
+                            <Textarea
+                                placeholder="例:転生したらスライムだった件, 転生..."
+                                value={similarityQuery}
+                                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setSimilarityQuery(e.target.value)}
+                                minH="120px"
+                            />
+                    </FormControl>
+
+                    <Button type="submit" colorScheme="secondary" w="full">類似作品を検索</Button>
+                </VStack>
+            </TabPanel>
         </TabPanels>
     </Tabs>
     );
