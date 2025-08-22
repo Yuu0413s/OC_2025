@@ -61,17 +61,17 @@ export const SearchForm = ({ onFilterSearch, onSimilaritySearch }: Props) => {
                 <VStack as="form" onSubmit={handleSimilaritySubmit} w="full" spacing={4} pt={4}>
                     <FormControl>
                         <Text as="label" mb="sm" display="block" fontSize="md" fontWeight="medium">
-                            あなたが所持している小説のタイトル・キーワード
+                            あなたが興味のあるワード
                         </Text>
                             <Textarea
-                                placeholder="例:転生したらスライムだった件, 転生..."
+                                placeholder="例:異世界, 恋愛..."
                                 value={similarityQuery}
                                 onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setSimilarityQuery(e.target.value)}
                                 minH="120px"
                             />
                     </FormControl>
 
-                    <Button type="submit" colorScheme="secondary" w="full">類似作品を検索</Button>
+                    <Button type="submit" colorScheme="secondary" w="full">おすすめ作品を表示</Button>
                 </VStack>
             </TabPanel>
         </TabPanels>
